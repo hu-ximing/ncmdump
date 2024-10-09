@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <vector>
 #include <filesystem>
+#include <thread>
 
 #if defined(_WIN32)
 #include "platform.h"
@@ -131,6 +132,8 @@ int main(int argc, char **argv)
         fs::create_directories(outputDir);
     }
 
+    std::vector<std::thread> threads;
+
     // process files in a folder
     if (result.count("directory"))
     {
@@ -165,7 +168,8 @@ int main(int argc, char **argv)
                     fs::create_directories(destinationPath.parent_path());
 
                     // 处理文件
-                    processFile(path, destinationPath.parent_path());
+                    // processFile(path, destinationPath.parent_path());
+                    threads.emplace_back(processFile, path, destinationPath.parent_path());
                 }
             }
         }
@@ -178,14 +182,21 @@ int main(int argc, char **argv)
                 {
                     if (outputDirSpecified)
                     {
-                        processFile(path, outputDir);
+                        // processFile(path, outputDir);
+                        threads.emplace_back(processFile, path, outputDir);
                     }
                     else
                     {
-                        processFile(path, "");
+                        // processFile(path, "");
+                        threads.emplace_back(processFile, path, "");
                     }
                 }
             }
+        }
+
+        for (auto &t : threads)
+        {
+            t.join();
         }
         return 0;
     }

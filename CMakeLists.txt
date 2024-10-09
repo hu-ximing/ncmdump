@@ -10,6 +10,8 @@ set(WITH_ZLIB OFF)
 set(BUILD_TESTING OFF)
 add_subdirectory(taglib)
 
+set(CMAKE_EXE_LINKER_FLAGS "-s")
+
 if(MSVC)
   add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/execution-charset:utf-8>")
 endif()
